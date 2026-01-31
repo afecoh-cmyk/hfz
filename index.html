@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobil Autókozmetika</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body class="dark-theme">
+    <div class="background-overlay"></div>
+
+    <!-- Global Announcement Banner -->
+    <div id="announcement-banner"
+        style="display: none; background: linear-gradient(90deg, #e81123, #d1001f); color: white; padding: 12px 40px 12px 20px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 9999; box-shadow: 0 4px 15px rgba(232, 17, 35, 0.4); animation: slideDown 0.5s ease-out;">
+        <span id="announcement-content"></span>
+        <button onclick="dismissAnnouncement()"
+            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; padding: 0 5px;">✕</button>
+    </div>
+
+    <div class="start-menu-container">
+        <header class="user-profile">
+            <div class="avatar">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Driver" alt="User Avatar">
+            </div>
+            <div class="user-info">
+                <h1>Szia, Sofőr!</h1>
+                <p id="current-date-info" style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Mai dátum: <span
+                        id="current-date">Betöltés...</span></p>
+                <p>Készen áll a belső takarítás?</p>
+            </div>
+        </header>
+
+        <div class="tile-grid">
+            <!-- Information Hub Tile (Medium) - NEW -->
+            <div class="tile tile-medium tile-info-hub">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 21V9"></path>
+                        <path d="M17 21v-4"></path>
+                        <path d="M7 21v-7"></path>
+                        <path d="M22 21H2"></path>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <p
+                        style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color:#4cc9f0; margin-bottom: 8px;">
+                        Információs Fal 📢</p>
+                    <div id="info-wall-message" style="font-size: 0.8rem; line-height: 1.3; opacity: 0.9;">
+                        Hamarosan... ✨</div>
+                </div>
+            </div>
+
+            <!-- Garage Tile (Medium) -->
+            <div class="tile tile-medium tile-secondary" onclick="openGarageModal()">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-2.7 4.1c-.2.3-.3.7-.3 1v5c0 .6.4 1 1 1h2m2 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm9 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <h3>Garázs</h3>
+                    <p class="tile-desc" id="garage-count">0 autó</p>
+                </div>
+            </div>
+
+            <!-- Appointment Tile (Medium) -->
+            <div class="tile tile-medium tile-accent" onclick="openBookingModal()">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <h3>Időpont</h3>
+                    <p class="tile-desc">Foglalj most</p>
+                </div>
+            </div>
+
+            <!-- Contact Tile (Small) -->
+            <div class="tile tile-small" onclick="openModal('contact-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                        </path>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <p>Hívás</p>
+                    <span style="font-size: 0.6em; opacity: 0.6; display: block;">🛠️ Fejlesztés alatt</span>
+                </div>
+            </div>
+
+            <!-- Map Tile (Small) -->
+            <div class="tile tile-small" onclick="openModal('map-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <p>Térkép</p>
+                    <span style="font-size: 0.6em; opacity: 0.6; display: block;">🛠️ Fejlesztés alatt</span>
+                </div>
+            </div>
+            <!-- Info Tile (Small) -->
+            <div class="tile tile-small" onclick="openModal('info-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <p>Infó</p>
+                    <span style="font-size: 0.6em; opacity: 0.6; display: block;">🛠️ Fejlesztés alatt</span>
+                </div>
+            </div>
+
+            <!-- Themes Tile (Small) -->
+            <div class="tile tile-small" onclick="openModal('theme-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <p>Témák</p>
+                </div>
+            </div>
+
+            <!-- Profile és Előfizetés Hub Tile (Medium) - NEW MERGED -->
+            <div class="tile tile-medium tile-primary" onclick="openProfileHub()" id="profile-hub-tile">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <h3>Profil</h3>
+                    <div style="font-size:0.9rem; opacity:0.9; margin-bottom: 5px;">
+                        <span id="tile-points-display" style="font-weight:bold; color:#ffd700;">0 pt</span> •
+                        <span id="sub-status-tile" style="font-size:0.8rem;">Free</span>
+                    </div>
+                    <div style="font-size: 0.75rem; opacity: 0.7;">Kattints a részletekért</div>
+                </div>
+            </div>
+
+            <!-- Gifting Tile (Small) - NEW -->
+            <div class="tile tile-small tile-gift" onclick="openModal('gift-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                        <rect x="2" y="7" width="20" height="5"></rect>
+                        <line x1="12" y1="22" x2="12" y2="7"></line>
+                        <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                        <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <p>Ajándékozás</p>
+                </div>
+            </div>
+
+            <!-- FAQ Tile (Small) - NEW -->
+            <div class="tile tile-small" style="background: rgba(76, 201, 240, 0.2);" onclick="openModal('faq-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <p style="font-size: 0.8rem; font-weight: 600;">GY.I.K.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification (Bottom Right) -->
+    <div id="notification-toast" class="toast-hidden">
+        <div class="toast-content">
+            <span id="toast-icon">📢</span>
+            <p id="toast-message" style="margin-right: 15px;"></p>
+            <button onclick="hideToast()"
+                style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8em;">Értettem</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="garage-modal" class="modal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header" style="align-items: center;">
+                <h2>Garázs</h2>
+                <div id="garage-view-toggle" onclick="toggleGarageView()"
+                    style="margin-left: auto; margin-right: 15px; background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;">
+                    <span id="toggle-icon">🧊</span>
+                    <span id="toggle-text">Classic nézet</span>
+                </div>
+                <button class="close-btn" onclick="closeModal('garage-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="car-list" class="car-list">
+                    <!-- Cars will be injected here -->
+                    <p class="empty-state">Még nincs autód a garázsban.</p>
+                </div>
+                <button id="btn-add-new-car" class="btn-primary btn-add-car" onclick="showAddCarForm()">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Új autó hozzáadása
+                </button>
+
+                <form id="add-car-form" class="hidden">
+                    <input type="text" id="car-brand" placeholder="Márka (pl. BMW)" required>
+                    <input type="text" id="car-model" placeholder="Típus (pl. X5)" required>
+                    <input type="text" id="car-plate" placeholder="Rendszám (opcionális)">
+                    <button type="submit" class="btn-success">Mentés</button>
+                    <button type="button" class="btn-text" onclick="hideAddCarForm()">Mégse</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="theme-modal" class="modal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2>Témák</h2>
+                <button class="close-btn" onclick="closeModal('theme-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="theme-options-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="theme-card" onclick="setAppTheme('liquid')"
+                        style="padding: 20px; border-radius: 12px; text-align: center; cursor: pointer; background: linear-gradient(135deg, #050508, #111827); border: 2px solid #4f46e5; color: white;">
+                        <div style="font-size: 24px; margin-bottom: 5px;">💎</div>
+                        <div style="font-weight: 600;">Liquid Chrome</div>
+                    </div>
+                    <div class="theme-card" onclick="setAppTheme('theme-windows')"
+                        style="padding: 20px; border: 1px solid rgba(0, 120, 215, 0.4); border-radius: 8px; text-align: center; cursor: pointer; background: #121212; color: #0078d7;">
+                        <div style="font-size: 24px; margin-bottom: 5px;">🪟</div>
+                        <div style="font-weight: 600;">Klasszikus</div>
+                    </div>
+                    <div class="theme-card" onclick="setAppTheme('theme-pulse')"
+                        style="padding: 20px; border: 2px solid #f472b6; border-radius: 12px; text-align: center; cursor: pointer; background: #020617; color: #22d3ee; box-shadow: 0 0 15px rgba(244, 114, 182, 0.3);">
+                        <div style="font-size: 24px; margin-bottom: 5px;">⚡</div>
+                        <div style="font-weight: 600;">Electric Pulse</div>
+                    </div>
+                    <div class="theme-card" onclick="setAppTheme('theme-ceramic')"
+                        style="padding: 20px; border: 1px solid #d4af37; border-radius: 24px; text-align: center; cursor: pointer; background: #f8fafc; color: #0f172a; box-shadow: 0 8px 30px rgba(0,0,0,0.05);">
+                        <div style="font-size: 24px; margin-bottom: 5px;">🏺</div>
+                        <div style="font-weight: 600;">Signature Ceramic</div>
+                    </div>
+                    <div class="theme-card" onclick="setAppTheme('theme-retro')"
+                        style="padding: 20px; border: 1px solid #00ff41; border-radius: 4px; text-align: center; cursor: pointer; background: #0d0221; color: #00ff41;">
+                        <div style="font-size: 24px; margin-bottom: 5px;">🕹️</div>
+                        <div style="font-weight: 600;">Retro 80's</div>
+                    </div>
+                    <div class="theme-card" onclick="setAppTheme('theme-cyberpunk')"
+                        style="padding: 20px; border: 2px solid #ff0055; border-radius: 4px; text-align: center; cursor: pointer; background: #050505; color: #00f3ff; box-shadow: 0 0 10px #ff0055;">
+                        <div style="font-size: 24px; margin-bottom: 5px;">🦾</div>
+                        <div style="font-weight: 600;">Cyberpunk</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="service-modal" class="modal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2>Belső Takarítás</h2>
+                <button class="close-btn" onclick="closeModal('service-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="service-details">
+                    <div class="service-highlight">
+                        <span class="time">⏱ 20-30 perc</span>
+                        <span class="price">5000 Ft-tól</span>
+                    </div>
+                    <ul>
+                        <li>Porszívózás (ülések, szőnyegek)</li>
+                        <li>Műszerfal portalanítás és ápolás</li>
+                        <li>Ablakok tisztítása belülről</li>
+                        <li>Illatosítás</li>
+                    </ul>
+                    <button class="btn-primary full-width">Kiválaszt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal (NEW) -->
+    <div id="review-modal" class="modal">
+        <div class="modal-content glass-panel" style="text-align: center;">
+            <div class="modal-header">
+                <h2>Értékelés</h2>
+                <button class="close-btn" onclick="closeModal('review-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="opacity: 0.8; margin-bottom: 20px;">Hogy tetszett a szolgáltatás?</p>
+
+                <div class="star-rating"
+                    style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
+                    <!-- Stars will be handled by JS or simple radio buttons -->
+                    <span class="star" data-value="1" style="font-size: 2rem; cursor: pointer; color: #555;">★</span>
+                    <span class="star" data-value="2" style="font-size: 2rem; cursor: pointer; color: #555;">★</span>
+                    <span class="star" data-value="3" style="font-size: 2rem; cursor: pointer; color: #555;">★</span>
+                    <span class="star" data-value="4" style="font-size: 2rem; cursor: pointer; color: #555;">★</span>
+                    <span class="star" data-value="5" style="font-size: 2rem; cursor: pointer; color: #555;">★</span>
+                </div>
+
+                <textarea id="review-comment" placeholder="Írj egy rövid véleményt..."
+                    style="width: 100%; height: 80px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; padding: 10px; margin-bottom: 15px;"></textarea>
+
+                <button class="btn-primary full-width" onclick="submitReview()">Beküldés</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gifting Modal (NEW) -->
+    <div id="gift-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2>Leppj meg valakit! 🎁</h2>
+                <button class="close-btn" onclick="closeModal('gift-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="opacity: 0.8; margin-bottom: 20px; font-size: 0.9rem;">
+                    Lepd meg barátodat vagy családtagodat egy profi belső takarítással! 🤫
+                </p>
+
+                <!-- My Active Gifts Section - Prominent (Top) -->
+                <div id="my-active-gifts"
+                    style="margin-bottom: 25px; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 20px; display: none;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 15px; color: #ff0055;">Aktív Meglepetéseid 🕵️‍♂️</h3>
+                    <div id="active-gifts-list">
+                        <!-- Gift cards with countdowns injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Process Info Section - NEW -->
+                <div
+                    style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px dashed rgba(255,255,255,0.2);">
+                    <h4 style="margin: 0 0 10px 0; font-size: 0.9rem; color: #4cc9f0;">Hogyan működik a meglepetés?</h4>
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.8rem; opacity: 0.9;">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <span
+                                style="background: #4cc9f0; color: black; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">1</span>
+                            <span>Töltsd ki az űrlapot az ajándékozott adataival.</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <span
+                                style="background: #4cc9f0; color: black; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">2</span>
+                            <span>Az adminunk elfogadja és egyezteti a pontos helyszínt.</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <span
+                                style="background: #4cc9f0; color: black; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">3</span>
+                            <span>Kész! Kövesd élőben itt a visszaszámlálót! 🤫✨</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="gift-form">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 0.8rem; opacity: 0.7;">Kit
+                            szeretnél meglepni?</label>
+                        <input type="text" id="gift-recipient" placeholder="Név vagy Becenév" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 0.8rem; opacity: 0.7;">Milyen autót
+                            keressünk?</label>
+                        <input type="text" id="gift-car" placeholder="Pl. Ezüst Audi A4 (ABC-123)" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 0.8rem; opacity: 0.7;">Hol találjuk
+                            az autót?</label>
+                        <input type="text" id="gift-address" placeholder="Cím, házszám, parkolóhely leírás" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label
+                                style="display: block; margin-bottom: 5px; font-size: 0.8rem; opacity: 0.7;">Dátum</label>
+                            <input type="date" id="gift-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label
+                                style="display: block; margin-bottom: 5px; font-size: 0.8rem; opacity: 0.7;">Időpont</label>
+                            <input type="time" id="gift-time" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 0.8rem; opacity: 0.7;">Titkos
+                            üzenet neki (opcionális)</label>
+                        <textarea id="gift-message" placeholder="Pl. Boldog szülinapot! Szeretlek :)"
+                            style="width: 100%; height: 60px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 8px; color: white; padding: 10px;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-success full-width"
+                        style="background: linear-gradient(135deg, #ff0055, #bc00ff); border: none;">
+                        Meglepetés küldése! 🚀
+                    </button>
+                </form>
+
+                <!-- My Active Gifts Section - Prominent (Top) is kept, removing duplicate at bottom -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal (Wizard Style) -->
+    <div id="booking-modal" class="modal">
+        <div class="modal-content glass-panel booking-content wizard-container">
+            <div class="modal-header">
+                <h2>Időpontfoglalás</h2>
+                <button class="close-btn" onclick="closeModal('booking-modal')">×</button>
+            </div>
+
+            <div class="wizard-body">
+                <!-- Progress Bar -->
+                <div class="wizard-progress">
+                    <div class="step-indicator active" id="step-dot-1">1</div>
+                    <div class="step-line"></div>
+                    <div class="step-indicator" id="step-dot-2">2</div>
+                    <div class="step-line"></div>
+                    <div class="step-indicator" id="step-dot-3">3</div>
+                    <div class="step-line"></div>
+                    <div class="step-indicator" id="step-dot-4">4</div>
+                </div>
+
+                <!-- Step 1: Date Selection -->
+                <div class="wizard-step active" id="step-1">
+                    <h3>Válassz napot</h3>
+                    <p class="hint-text">A következő 4 hét elérhető napjai.</p>
+                    <div class="calendar-scroll-container">
+                        <div id="calendar-grid" class="calendar-grid">
+                            <!-- Dates injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Service Selection (NEW) -->
+                <div class="wizard-step" id="step-2">
+                    <h3>Válassz Szolgáltatást</h3>
+                    <p class="hint-text">Válassz az elérhető csomagok közül.</p>
+                    <div id="services-grid" class="services-wizard-grid">
+                        <!-- Services injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Step 3: Slot Selection (Was 2) -->
+                <div class="wizard-step" id="step-3">
+                    <h3>Válassz időpontot</h3>
+                    <p class="hint-text"><span id="selected-service-display"
+                            style="color: #4cc9f0; font-weight:bold;">-</span> <br> Szabad időpontok: <strong
+                            id="selected-date-display">-</strong></p>
+                    <div id="slots-grid" class="slots-grid">
+                        <!-- Slots injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Step 4: Confirmation (Was 3) -->
+                <div class="wizard-step" id="step-4">
+                    <h3>Foglalás összegzése</h3>
+                    <div class="confirmation-card">
+                        <div class="conf-item">
+                            <span class="conf-label">Szolgáltatás:</span>
+                            <span class="conf-value" id="conf-service">-</span>
+                        </div>
+                        <div class="conf-item">
+                            <span class="conf-label">Dátum:</span>
+                            <span class="conf-value" id="conf-date">-</span>
+                        </div>
+                        <div class="conf-item">
+                            <span class="conf-label">Időpont:</span>
+                            <span class="conf-value" id="conf-time">-</span>
+                        </div>
+                        <div class="conf-item">
+                            <span class="conf-label">Ár:</span>
+                            <span class="conf-value" id="conf-price">-</span>
+                        </div>
+
+                        <!-- Payment Method Selection (NEW) -->
+                        <div id="payment-method-container"
+                            style="margin-top:15px; padding:15px; background:rgba(255,255,255,0.05); border-radius:12px; border-top:1px solid rgba(255,255,255,0.1);">
+                            <h4 style="margin-top:0; color:#4cc9f0; margin-bottom:10px; font-size:0.9rem;">Fizetési mód
+                                választása:</h4>
+                            <select id="payment-method-choice" class="glass-select"
+                                style="width:100%; height:40px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:8px;"
+                                onchange="updateFinalConfirmationPrice()">
+                                <option value="normal">Fizetés a helyszínen</option>
+                                <option value="reward" id="opt-reward" disabled>5 Pont beváltása (Ingyenes)</option>
+                                <option value="subscription" id="opt-sub" disabled>Heti ingyenes mosás (Előfizető)
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Car Selection -->
+                        <div class="conf-item"
+                            style="flex-direction: column; align-items: flex-start; gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px; padding-bottom: 15px;">
+                            <span class="conf-label">Válassz autót:</span>
+                            <select id="booking-car-select">
+                                <option value="" disabled selected>-- Válassz a garázsból --</option>
+                                <!-- Cars injected via JS -->
+                            </select>
+                        </div>
+
+                        <!-- Address Selection (NEW) -->
+                        <div class="conf-address-group"
+                            style="padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                            <span class="conf-label">Hová érkezzem?</span>
+                            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                                <input type="text" id="booking-city" placeholder="Város (pl. Budapest)" required
+                                    style="margin-bottom: 0;">
+                                <input type="text" id="booking-street" placeholder="Utca" required
+                                    style="margin-bottom: 0;">
+                                <input type="text" id="booking-housenumber" placeholder="Házszám" required
+                                    style="margin-bottom: 0;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wizard Navigation -->
+            <div class="wizard-footer">
+                <button id="btn-back" class="btn-nav btn-text" onclick="prevStep()">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    Vissza
+                </button>
+                <button id="btn-next" class="btn-nav btn-primary" onclick="nextStep()">
+                    Tovább
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+                <button id="btn-finish" class="btn-nav btn-success hidden"
+                    onclick="confirmBooking()">Lefoglalom</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal (Character Creation) -->
+    <div id="registration-modal" class="modal full-screen-modal">
+        <div class="modal-content glass-panel registration-content">
+            <div class="reg-header">
+                <h2 id="reg-title">Üdvözöllek! 👋</h2>
+                <p id="reg-subtitle">Jelentkezz be a folytatáshoz.</p>
+            </div>
+            <form id="registration-form" data-mode="login">
+                <input type="hidden" id="auth-mode-input" value="login">
+                <div class="avatar-selection" id="reg-avatar-container" style="display: none;">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Driver" alt="Avatar Preview"
+                        id="avatar-preview">
+                </div>
+                <div class="form-group">
+                    <label>Felhasználónév</label>
+                    <input type="text" id="reg-username" placeholder="Írd be a neved" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label>Jelszó</label>
+                    <input type="password" id="reg-password" placeholder="Jelszó" required
+                        autocomplete="current-password">
+                </div>
+                <button type="submit" id="btn-auth-submit" class="btn-primary btn-large pulsating-btn">
+                    Bejelentkezés 🚀
+                </button>
+            </form>
+            <p id="msg-auth-switch"
+                style="margin-top:15px; cursor:pointer; color:#4cc9f0; text-decoration:underline; font-size:0.9rem;"
+                onclick="toggleAuthMode()">
+                Nincs még fiókod? Regisztráció
+            </p>
+        </div>
+    </div>
+
+    <!-- FAQ Modal (NEW) -->
+    <div id="faq-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-height: 85vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>GY.I.K. 📚</h2>
+                <button class="close-btn" onclick="closeModal('faq-modal')">×</button>
+            </div>
+            <div class="modal-body" style="line-height: 1.6; font-size: 0.9rem;">
+                <div
+                    style="background: rgba(76, 201, 240, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #4cc9f0;">
+                    <p>Összeszedtük a leggyakoribb kérdéseket, hogy minden simán menjen! 😊🚀</p>
+                </div>
+
+                <div class="faq-section" style="margin-bottom: 25px;">
+                    <h3 style="color: #ffd700; margin-bottom: 10px;">🚀 Funkciók Áttekintése</h3>
+                    <div style="display: grid; gap: 12px;">
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #4cc9f0;">
+                            <strong style="color:#4cc9f0;">🚗 Garázs</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Itt kezelheted az összes
+                                autódat. Adj hozzá újat, vagy módosítsd a meglévőket.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #4361ee;">
+                            <strong style="color:#4361ee;">📅 Foglalás</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Gyors, nap és idő alapú
+                                foglalási rendszer. Válaszd ki az autót, a szolgáltatást és az időpontot.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #ff0055;">
+                            <strong style="color:#ff0055;">🎁 Ajándékozás</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Küldj egy meglepetés
+                                takarítást bárkinek! Az admin elfogadása után élőben követheted.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
+                            <strong style="color:#ffd700;">👑 Weekly Shine</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">VIP előfizetés: heti egy
+                                ingyen mosás, dupla pontok és exkluzív státusz.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #4ade80;">
+                            <strong style="color:#4ade80;">👤 Profil Hub</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Itt látod a pontjaidat, a
+                                szintedet és itt tudsz pontokat küldeni barátaidnak.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #f72585;">
+                            <strong style="color:#f72585;">🎨 Megjelenés</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Szabd személyre az appot!
+                                Válaszd ki a stílusodhoz illő témát az ecset ikonnal.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-section">
+                    <h3 style="color: #4cc9f0; margin-bottom: 10px;">🏆 Shine Pontok</h3>
+                    <div style="display: grid; gap: 10px;">
+                        <div>
+                            <strong>Hogyan kapok pontokat?</strong>
+                            <p style="opacity: 0.8; font-size: 0.85rem;">Minden befejezett mosás után 1 Shine Pont jár.
+                            </p>
+                        </div>
+                        <div>
+                            <strong>Mire jók?</strong>
+                            <p style="opacity: 0.8; font-size: 0.85rem;">5 pont után a következő mosásod teljesen
+                                INGYENES!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-section" style="margin-bottom: 25px;">
+                    <h3 style="color: #4cc9f0; margin-bottom: 10px;">🎁 Ajándékozás</h3>
+                    <div style="display: grid; gap: 15px;">
+                        <div>
+                            <strong>Hogyan küldhetek ajándékot?</strong>
+                            <p style="opacity: 0.8;">Válaszd az "Ajándékozás" csempét, add meg a célszemély nevét és a
+                                címet. Az admin elfogadása után élőben követheted a mosást!</p>
+                        </div>
+                        <div>
+                            <strong>Hol látom az aktív ajándékaimat?</strong>
+                            <p style="opacity: 0.8;">Az "Ajándékozás" menü tetején, a "Saját Aktív Ajándékaim" részben
+                                látsz minden futó folyamatot.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-section" style="margin-bottom: 25px;">
+                    <h3 style="color: #4361ee; margin-bottom: 10px;">📅 Foglalás és Garázs</h3>
+                    <div style="display: grid; gap: 15px;">
+                        <div>
+                            <strong>Hogyan adhatok hozzá autót?</strong>
+                            <p style="opacity: 0.8;">A "Garázs" menüben az "Új autó hozzáadása" gombbal rögzítheted a
+                                járműveidet.</p>
+                        </div>
+                        <div>
+                            <strong>Mikorra tudok foglalni?</strong>
+                            <p style="opacity: 0.8;">A naptárban csak a szabad, nap és idő alapú validált időpontok
+                                jelennek
+                                meg. A rendszer alapból számol neked reagálási időt.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-section">
+                    <h3 style="color: #ff0055; margin-bottom: 10px;">🎨 Megjelenés</h3>
+                    <div style="display: grid; gap: 15px;">
+                        <div>
+                            <strong>Hogyan válthatok témát?</strong>
+                            <p style="opacity: 0.8;">Az "Ecset" ikonra kattintva választhatsz a Cyberpunk, Luxus, Retró
+                                és egyéb stílusok közül.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px; opacity: 0.5; font-size: 0.8rem;">
+                    © 2026 Mobil Autókozmetika - Mindig ragyogó tisztaság! ✨
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Hub Modal (Merged) -->
+    <div id="profile-hub-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Profil és Előfizetés 👤</h2>
+                <button class="close-btn" onclick="closeModal('profile-hub-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- User Info Section -->
+                <div
+                    style="display: flex; align-items: center; margin-bottom: 25px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px;">
+                    <img src="" id="hub-avatar"
+                        style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--glass-border); margin-right: 15px;">
+                    <div>
+                        <h3 id="hub-username" style="margin: 0; font-size: 1.2rem;">-</h3>
+                        <div style="font-size: 0.9rem; opacity: 0.7; margin-top: 4px;">
+                            Szint: <span id="hub-level" style="color: #ffd700; font-weight: bold;">-</span>
+                        </div>
+                    </div>
+                    <div style="margin-left: auto; text-align: center;">
+                        <div style="font-size: 0.8rem; opacity: 0.6;">Shine Pontok</div>
+                        <div id="hub-points" style="font-size: 1.4rem; font-weight: bold; color: #4cc9f0;">0</div>
+                    </div>
+                </div>
+
+                <!-- Subscription Section -->
+                <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                    <div style="text-align:center; margin-bottom:20px;">
+                        <h3 style="color:#4cc9f0; margin:10px 0;">Weekly Shine Előfizetés 👑</h3>
+                        <p style="opacity:0.8; font-size: 0.9rem;">Legyen az autód mindig ragyogó!</p>
+                    </div>
+
+                    <div id="sub-active-info"
+                        style="display:none; text-align:center; padding:15px; background:rgba(0,255,0,0.1); border-radius:12px; margin-bottom:15px; border:1px solid #00ff00;">
+                        <p style="color:#00ff00; font-weight:bold; margin:0;">AKTÍV ELŐFIZETÉS</p>
+                        <p id="sub-next-wash" style="font-size:0.85rem; margin:5px 0 0 0; opacity:0.8;"></p>
+                    </div>
+
+                    <div id="sub-offer-details"
+                        style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); margin-bottom:20px;">
+                        <ul style="list-style:none; padding:0; margin:0; display:grid; gap:8px; font-size: 0.9rem;">
+                            <li>✨ <strong>Heti 1 ingyenes</strong> belső takarítás</li>
+                            <li>🎁 <strong>Dupla</strong> Shine Pontok</li>
+                            <li>👑 <strong>VIP</strong> státusz</li>
+                        </ul>
+                        <div
+                            style="text-align:center; margin-top:15px; font-size:1.2rem; font-weight:bold; color:#4cc9f0;">
+                            9.900 Ft / hó
+                        </div>
+                    </div>
+
+                    <button id="btn-buy-sub" onclick="buySubscription()" class="btn-primary full-width"
+                        style="padding:12px; font-size:1rem; box-shadow: 0 0 20px rgba(76, 201, 240, 0.2);">
+                        Előfizetés Most 🚀
+                    </button>
+                    <div id="sub-status"
+                        style="text-align:center; margin-top:10px; font-weight:bold; font-size: 0.9rem;"></div>
+                    <p style="font-size:0.7rem; text-align:center; opacity:0.5; margin-top:10px;">Bármikor lemondható.
+                    </p>
+                </div>
+
+                <!-- Transfer Points Section (Moved from FAQ) -->
+                <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 25px; padding-top: 25px;">
+                    <div
+                        style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; border: 1px solid rgba(255,215,0,0.2);">
+                        <h4 style="margin-top:0; font-size:1rem; color:#ffd700; text-align:center;">Pontátadás Barátnak
+                            🎁</h4>
+                        <p style="font-size:0.8rem; opacity:0.7; margin-bottom:12px; text-align:center;">Neked sok van,
+                            neki kevés? Oszd meg a ragyogást!</p>
+                        <div class="form-group" style="margin-bottom:10px;">
+                            <input type="text" id="transfer-target-id" placeholder="Célfelhasználó neve"
+                                class="glass-input">
+                        </div>
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <input type="number" id="transfer-amount" placeholder="Hány pontot küldesz?"
+                                class="glass-input" min="1">
+                        </div>
+                        <button onclick="transferShinePoints()" class="btn-primary full-width"
+                            style="background:rgba(255, 215, 0, 0.2); border-color:#ffd700; color:#ffd700;">Pontok
+                            Küldése ✉️</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Description Modal (NEW) -->
+    <div id="service-description-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Belső Takarítás ✨</h2>
+                <button class="close-btn" onclick="closeModal('service-description-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <div style="font-size:3.5rem; margin-bottom:10px;">🧼🚗</div>
+                    <p style="font-size:1.1rem; opacity:0.9;">Prémium minőség, vízmentes technológia.</p>
+                </div>
+
+                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:20px;">
+                    <h4
+                        style="margin-top:0; color:#4cc9f0; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">
+                        Mit tartalmaz?</h4>
+                    <ul style="list-style:none; padding:0; margin:10px 0 0 0; display:grid; gap:8px;">
+                        <li>✔️ Teljes porszívózás (ülések, szőnyegek, csomagtér)</li>
+                        <li>✔️ Műszerfal és műanyagok portalanítása és ápolása</li>
+                        <li>✔️ Ablakok tisztítása belülről (csíkmentes)</li>
+                        <li>✔️ Ajtófalcok törlése</li>
+                        <li>✔️ Kellemes, diszkrét illatosítás</li>
+                    </ul>
+                </div>
+
+                <div
+                    style="display:flex; justify-content:space-between; margin-bottom:25px; font-size:0.9rem; opacity:0.8;">
+                    <span>⏱ Időtartam: <strong>20-30 perc</strong></span>
+                    <span>💰 Ár: <strong>4.500 Ft</strong></span>
+                </div>
+
+                <button onclick="closeModal('service-description-modal'); openBookingModal();"
+                    class="btn-primary full-width" style="padding:15px; font-size:1.1rem;">
+                    Foglalás Indítása 📅
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Modal -->
+    <div id="map-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Hol dolgozunk? 📍</h2>
+                <button class="close-btn" onclick="closeModal('map-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div
+                    style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: center; position: relative; overflow: hidden;">
+                    <!-- Radar Scanner Visual -->
+                    <div class="radar-container"
+                        style="width: 120px; height: 120px; margin: 0 auto 20px; position: relative;">
+                        <div class="radar-circle"
+                            style="width: 100%; height: 100%; border: 2px solid rgba(76, 201, 240, 0.3); border-radius: 50%; position: absolute; top:0; left:0;">
+                        </div>
+                        <div class="radar-circle"
+                            style="width: 70%; height: 70%; border: 1px solid rgba(76, 201, 240, 0.2); border-radius: 50%; position: absolute; top:15%; left:15%;">
+                        </div>
+                        <div class="radar-circle"
+                            style="width: 40%; height: 40%; border: 1px solid rgba(76, 201, 240, 0.1); border-radius: 50%; position: absolute; top:30%; left:30%;">
+                        </div>
+                        <div class="radar-beam"
+                            style="width: 50%; height: 2px; background: linear-gradient(90deg, transparent, #4cc9f0); position: absolute; top: 50%; left: 50%; transform-origin: left center; animation: rotateRadar 3s linear infinite;">
+                        </div>
+                        <div class="radar-dot"
+                            style="width: 6px; height: 6px; background: #4cc9f0; border-radius: 50%; position: absolute; top: 20%; left: 30%; box-shadow: 0 0 10px #4cc9f0; animation: blink 1.5s infinite;">
+                        </div>
+                        <div class="radar-dot"
+                            style="width: 5px; height: 5px; background: #ff0055; border-radius: 50%; position: absolute; top: 60%; left: 70%; box-shadow: 0 0 8px #ff0055; animation: blink 2s infinite;">
+                        </div>
+                    </div>
+                    <p
+                        style="font-weight: bold; color: #4cc9f0; margin-bottom: 5px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
+                        Kiszállási Terület</p>
+                    <p style="font-size: 0.85rem; opacity: 0.8;">Helyszíni belső takarítás ott, ahol az autód áll!</p>
+                </div>
+                <h3>Lefedett területek:</h3>
+                <ul style="opacity: 0.8; font-size: 0.9rem; line-height: 1.6; padding-left: 20px;">
+                    <li>Minden budapesti kerület</li>
+                    <li>Budaörs, Törökbálint, Diósd</li>
+                    <li>Dunakeszi, Fót, Gödöllő</li>
+                    <li>Szigetszentmiklós, Érd</li>
+                </ul>
+                <div
+                    style="margin-top:20px; text-align:center; font-size:0.8rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                    Egyéb helyszín esetén kérlek hívj minket egyedi ajánlatért!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="info-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-height: 85vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>Aktuális Árlista ✨</h2>
+                <button class="close-btn" onclick="closeModal('info-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <div
+                        style="background:rgba(255,215,0,0.1); padding:15px; border-radius:12px; margin-bottom:20px; border:1px solid #ffd700;">
+                        <h3 style="color:#ffd700; margin:0 0 5px 0;">👑 VIP és JUTALOM</h3>
+                        <p style="margin:0; font-size:0.9rem; opacity:0.9;"><strong>VIP tagoknak</strong> és <strong>5
+                                pont
+                                után</strong> mindenkinek</p>
+                        <p style="margin:5px 0 0 0; font-size:1.2rem; font-weight:bold; color:#4ade80;">TELJESEN INGYEN!
+                        </p>
+                    </div>
+
+                    <h3 style="color:#4cc9f0;">PRÉMIUM BELSŐ TAKARÍTÁS</h3>
+                </div>
+
+                <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:12px; margin-bottom:25px;">
+                    <ul style="list-style:none; padding:0; margin:0; display:grid; gap:12px; font-size:1rem;">
+                        <li style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.2rem;">✨</span> <strong>Porszívózás</strong> (ülések, szőnyegek)
+                        </li>
+                        <li style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.2rem;">🧘</span> <strong>Műszerfal</strong> portalanítás és ápolás
+                        </li>
+                        <li style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.2rem;">💎</span> <strong>Ablakok</strong> tisztítása belülről
+                        </li>
+                        <li style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.2rem;">🌬️</span> <strong>Illatosítás</strong> (választható illat)
+                        </li>
+                    </ul>
+                </div>
+
+                <div id="info-services-list">
+                    <!-- Dynamic services will be injected here if any -->
+                </div>
+
+                <div
+                    style="text-align:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px; margin-top:20px;">
+                    <h4 style="color:#4cc9f0; margin-bottom:10px;">Csak a legjobbat az autódnak!</h4>
+                    <p style="font-size:0.85rem; opacity:0.7; line-height:1.4;">Vízmentes technológiával, bárhol is
+                        álljon az autód. 🚀</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 400px; text-align: center;">
+            <div class="modal-header">
+                <h2>Kapcsolat 📞</h2>
+                <button class="close-btn" onclick="closeModal('contact-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 25px;">
+                    <div
+                        style="width: 70px; height: 70px; background: rgba(76, 201, 240, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; border: 1px solid rgba(76, 201, 240, 0.2);">
+                        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#4cc9f0" stroke-width="1.5">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 style="margin-bottom: 5px;">Hogyan segíthetünk?</h3>
+                    <p style="opacity:0.7; font-size:0.85rem;">Válassz az alábbi lehetőségek közül:</p>
+                </div>
+
+                <div class="contact-button-grid">
+                    <a href="tel:+36301234567" class="contact-option phone">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">📞</div>
+                        <div style="font-weight: 600; font-size: 0.8rem;">Hívás</div>
+                    </a>
+                    <a href="https://instagram.com" target="_blank" class="contact-option insta">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">📸</div>
+                        <div style="font-weight: 600; font-size: 0.8rem;">Instagram</div>
+                    </a>
+                    <a href="mailto:info@autokozmetika.hu" class="contact-option email">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">✉️</div>
+                        <div style="font-weight: 600; font-size: 0.8rem;">E-mail</div>
+                    </a>
+                    <div class="contact-option" onclick="alert('Hamarosan!')"
+                        style="border-color: #00ff41; color: #00ff41;">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">💬</div>
+                        <div style="font-weight: 600; font-size: 0.8rem;">WhatsApp</div>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 25px; font-size:0.75rem; opacity:0.5; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                    Ügyfélszolgálat: H-P 08:00 - 18:00
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="core.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

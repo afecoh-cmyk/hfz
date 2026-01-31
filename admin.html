@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Pult - Mobil Autókozmetika</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body class="dark-theme">
+    <!-- Admin Login Overlay (Security Layer) -->
+    <div id="admin-login-overlay"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at center, #1a1a2e 0%, #0d0d0d 100%); z-index:10000; display:flex; align-items:center; justify-content:center; backdrop-filter: blur(10px);">
+        <div class="glass-panel"
+            style="max-width:400px; width:90%; padding:40px; text-align:center; border: 1px solid rgba(76, 201, 240, 0.3); box-shadow: 0 0 50px rgba(76, 201, 240, 0.1);">
+            <div style="margin-bottom:30px;">
+                <div
+                    style="width:80px; height:80px; background: rgba(76, 201, 240, 0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
+                    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#4cc9f0" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <h2 style="margin:0; color: #4cc9f0; letter-spacing: 2px;">ADMIN BELÉPÉS</h2>
+                <p style="opacity:0.6; font-size:0.9rem; margin-top:10px;">Korlátozott hozzáférés</p>
+            </div>
+            <form id="admin-login-form">
+                <div class="form-group" style="margin-bottom:20px;">
+                    <input type="password" id="admin-pw-input" placeholder="Jelszó"
+                        style="width:100%; padding:15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius:8px; color:white; text-align:center; font-size:1.1rem; letter-spacing:4px;"
+                        required>
+                </div>
+                <button type="submit" class="btn-primary full-width"
+                    style="padding:15px; font-weight:bold; letter-spacing:1px; background: linear-gradient(135deg, #4361ee, #4cc9f0); border:none; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);">
+                    AZONOSÍTÁS 🚀
+                </button>
+                <p id="login-error" style="color:#ff4d4d; font-size:0.85rem; margin-top:15px; display:none;">Hibás
+                    jelszó! Próbáld újra.</p>
+            </form>
+        </div>
+    </div>
+
+    <div class="background-overlay"></div>
+
+    <div class="admin-container">
+        <header class="admin-header glass-panel">
+            <div class="admin-profile">
+                <div class="avatar">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=AdminBoss" alt="Admin Avatar">
+                </div>
+                <div class="user-info">
+                    <h1>Üdv, Főnök!</h1>
+                    <p>Mai dátum: <span id="current-date">Betöltés...</span></p>
+                    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 4px;">Rendszer aktív: <span
+                            id="system-heartbeat-display">Betöltés...</span></p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-text" onclick="window.location.href='index.html'">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    Kliens App
+                </button>
+                <button class="btn-danger" id="admin-logout-btn"
+                    style="padding: 5px 15px; font-size: 0.8rem; background: rgba(255, 77, 77, 0.2); border: 1px solid #ff4d4d; color: #ff4d4d; border-radius: 4px; cursor: pointer; display: none;">
+                    Kijelentkezés
+                </button>
+            </div>
+        </header>
+
+        <div class="tile-grid admin-grid">
+            <!-- Daily Schedule Tile (Large - Takes prominence) -->
+            <div class="tile tile-large tile-primary" onclick="openModal('schedule-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <h3>Napi Teendők</h3>
+                    <p class="tile-desc" id="today-jobs-count">Mai munkák: 0 db</p>
+                    <div class="mini-progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tile (Medium) -->
+            <div class="tile tile-medium tile-secondary" onclick="openModal('users-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <h3>Felhasználók</h3>
+                    <p class="tile-desc" id="total-users-count">0 regisztrált</p>
+                </div>
+            </div>
+
+            <!-- Services Tile (Medium) -->
+            <div class="tile tile-medium tile-secondary" onclick="openModal('services-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
+                        </path>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <h3>Szolgáltatások</h3>
+                    <p class="tile-desc" id="total-services-count">0 db</p>
+                </div>
+            </div>
+
+            <!-- Cars Tile (Medium) -->
+            <div class="tile tile-medium tile-accent" onclick="openModal('cars-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-2.7 4.1c-.2.3-.3.7-.3 1v5c0 .6.4 1 1 1h2m2 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm9 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <h3>Garázs</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="tile-desc" id="total-cars-count">0 autó</span>
+                        <span id="stat-vip-count"
+                            style="font-size:0.75rem; color:#ffd700; font-weight:bold; background:rgba(255,215,0,0.1); padding:2px 6px; border-radius:4px;">0
+                            VIP</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue/Stats Tile (Small) -->
+            <div class="tile tile-small" style="background: rgba(16, 124, 16, 0.3);"
+                onclick="openModal('finance-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <!-- Reset Button -->
+                <button onclick="event.stopPropagation(); archiveRevenue()" title="Bevétel Nullázás (Archiválás)"
+                    style="position: absolute; top: 10px; right: 10px; width: 25px; height: 25px; border-radius: 50%; background: radial-gradient(circle, #ff4d4d, #990000); border: 2px solid #ffcccc; box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;">
+                    <span style="color: white; font-weight: bold; font-size: 12px;">R</span>
+                </button>
+                <div class="tile-content">
+                    <p>Bevétel</p>
+                    <span id="stat-revenue-main" style="font-size: 0.9rem; font-weight: bold;">0 Ft</span>
+                </div>
+            </div>
+
+            <!-- Profit Tile (Small) -->
+            <div class="tile tile-small" style="background: rgba(255, 193, 7, 0.3);"
+                onclick="openModal('finance-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <p>Haszon</p>
+                    <span id="stat-profit-main" style="font-size: 0.9rem; font-weight: bold;">0 Ft</span>
+                </div>
+            </div>
+
+            <!-- Incoming Gifts Tile (Medium) - NEW -->
+            <div class="tile tile-medium"
+                style="background: linear-gradient(135deg, rgba(255, 0, 85, 0.3), rgba(188, 0, 255, 0.3));"
+                onclick="openModal('gifts-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                        <rect x="2" y="7" width="20" height="5"></rect>
+                        <line x1="12" y1="22" x2="12" y2="7"></line>
+                        <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                        <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <h3>Ajándékok</h3>
+                    <p class="tile-desc" id="incoming-gifts-count">0 feldolgozatlan</p>
+                </div>
+            </div>
+
+            <!-- Announcement Tile (Medium) -->
+            <div class="tile tile-medium tile-accent" onclick="openModal('announcement-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <p>Hirdetmény Kezelő</p>
+                    <span id="stat-announcement-status" style="font-size: 0.9rem; opacity: 0.8;">Lista kezelése</span>
+                </div>
+            </div>
+
+            <!-- VIP Requests Tile (Medium) - NEW -->
+            <div class="tile tile-medium"
+                style="background: linear-gradient(135deg, rgba(76, 201, 240, 0.4), rgba(255, 215, 0, 0.4));"
+                onclick="openModal('vip-requests-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M22 11l3 3L19 21"></path>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <h3>VIP Igénylések</h3>
+                    <p class="tile-desc" id="pending-vip-count">0 folyamatban</p>
+                </div>
+            </div>
+
+            <!-- Settings Tile (Small) -->
+            <div class="tile tile-small" onclick="openModal('settings-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <p>Beállítások</p>
+                </div>
+            </div>
+
+            <!-- FAQ Tile (Small) - NEW -->
+            <div class="tile tile-small" style="background: rgba(76, 201, 240, 0.2);" onclick="openModal('faq-modal')">
+                <div class="tile-bg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="tile-content">
+                    <p>GY.I.K.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Daily Schedule Modal -->
+    <div id="schedule-modal" class="modal">
+        <div class="modal-content glass-panel admin-modal-large">
+            <div class="modal-header">
+                <h2>Napi Teendők</h2>
+                <button class="close-btn" onclick="closeModal('schedule-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="date-navigator" style="display: none;">
+                    <button class="btn-text">&lt;</button>
+                    <span id="schedule-date-display">Ma</span>
+                    <button class="btn-text">&gt;</button>
+                </div>
+
+                <!-- Tab Navigation - NEW -->
+                <div class="admin-tabs"
+                    style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                    <button class="tab-btn active" onclick="switchScheduleTab('active')">Aktív (3 nap)</button>
+                    <button class="tab-btn" onclick="switchScheduleTab('completed')">Befejezett</button>
+                    <button class="tab-btn" onclick="switchScheduleTab('cancelled')">Törölt / Inaktív</button>
+                </div>
+
+                <div id="schedule-container">
+                    <!-- Content will be injected by category -->
+                    <div id="active-jobs-view" class="schedule-tab-content">
+                        <!-- Grouped by Date -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Modal -->
+    <div id="users-modal" class="modal">
+        <div class="modal-content glass-panel admin-modal-large">
+            <div class="modal-header">
+                <h2>Regisztrált Felhasználók</h2>
+                <button class="close-btn" onclick="closeModal('users-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="table-container">
+                    <table class="admin-table" id="users-table">
+                        <thead>
+                            <tr>
+                                <th>Felhasználó</th>
+                                <th>Szint</th>
+                                <th>Shine Pontok</th>
+                                <th>Autók</th>
+                                <th>Műveletek</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Users injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cars Modal -->
+    <div id="cars-modal" class="modal">
+        <div class="modal-content glass-panel admin-modal-large">
+            <div class="modal-header">
+                <h2>Összes Autó</h2>
+                <button class="close-btn" onclick="closeModal('cars-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" placeholder="Keresés rendszám vagy típus alapján..." class="search-bar">
+                <div class="table-container">
+                    <table class="admin-table" id="cars-table">
+                        <thead>
+                            <tr>
+                                <th>Rendszám</th>
+                                <th>Márka/Típus</th>
+                                <th>Tulajdonos</th>
+                                <th>Utolsó mosás</th>
+                                <th style="text-align:right;">Műveletek</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Cars injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Modal (NEW) -->
+    <div id="services-modal" class="modal">
+        <div class="modal-content glass-panel admin-modal-large">
+            <div class="modal-header">
+                <h2>Szolgáltatások Kezelése</h2>
+                <button class="close-btn" onclick="closeModal('services-modal')">×</button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Add New Service Form -->
+                <div style="background: rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:20px;">
+                    <h3 style="margin-top:0;">Új Szolgáltatás</h3>
+                    <form id="add-service-form"
+                        style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: 10px; align-items: end;">
+                        <div>
+                            <label style="display:block; font-size:0.8em; margin-bottom:5px;">Megnevezés</label>
+                            <input type="text" id="srv-name" placeholder="Pl. Külső Mosás" required
+                                style="width:100%; padding:8px; border-radius:5px; border:none;">
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:0.8em; margin-bottom:5px;">Idő (perc)</label>
+                            <input type="number" id="srv-time" placeholder="30" min="5" step="5" required
+                                style="width:100%; padding:8px; border-radius:5px; border:none;">
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:0.8em; margin-bottom:5px;">Ár (Ft)</label>
+                            <input type="number" id="srv-price" placeholder="4500" min="0" step="100" required
+                                style="width:100%; padding:8px; border-radius:5px; border:none;">
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:0.8em; margin-bottom:5px;">Anyagköltség (Ft)</label>
+                            <input type="number" id="srv-cost" placeholder="1500" min="0" step="100" required
+                                style="width:100%; padding:8px; border-radius:5px; border:none; background: rgba(232, 17, 35, 0.1); color: #ffcccc;">
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:0.8em; margin-bottom:5px;">Típus</label>
+                            <select id="srv-type"
+                                style="width:100%; padding:8px; border-radius:5px; border:none; background: #fff;">
+                                <option value="base">Alap</option>
+                                <option value="extra">Extra (+)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary"
+                            style="height: 32px; display:flex; align-items:center;">+</button>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <table class="admin-table" id="services-table">
+                        <thead>
+                            <tr>
+                                <th>Szolgáltatás Neve</th>
+                                <th>Időtartam</th>
+                                <th>Ár (Bevétel)</th>
+                                <th>Rezsi (Anyag)</th>
+                                <th>Haszon</th>
+                                <th>Kezelés</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finance Modal (NEW) -->
+        <div id="finance-modal" class="modal">
+            <div class="modal-content glass-panel admin-modal-large" style="max-width: 900px;">
+                <div class="modal-header">
+                    <h2>Pénzügyi Elemző</h2>
+                    <button class="close-btn" onclick="closeModal('finance-modal')">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="finance-header"
+                        style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px; flex-wrap:wrap; gap:15px;">
+                        <div class="finance-filters" style="display:flex; gap:10px; align-items:center;">
+                            <button class="filter-btn active" onclick="filterFinance('month', this)">Ez a hónap</button>
+                            <button class="filter-btn" onclick="filterFinance('year', this)">Ez az év</button>
+                            <button class="filter-btn" onclick="filterFinance('all', this)">Összes</button>
+                            <select id="finance-month-selector" class="admin-select"
+                                style="margin-left:5px; height:32px;" onchange="filterFinance('custom', null)">
+                                <!-- Months injected via JS -->
+                            </select>
+                        </div>
+                        <button class="btn-primary" onclick="exportFinanceToCSV()"
+                            style="background:#107c10; border-color:#107c10; height:32px; padding:0 15px; font-size:0.85rem; display:flex; align-items:center; gap:8px;">
+                            <span>📊</span> CSV Export
+                        </button>
+                    </div>
+
+                    <!-- KPI Cards -->
+                    <div class="kpi-grid"
+                        style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom:25px;">
+                        <div class="kpi-card glass-panel"
+                            style="background: rgba(40, 167, 69, 0.15); padding:15px; border-radius:10px;">
+                            <h4 style="margin:0 0 5px 0; font-size:0.9em; opacity:0.8;">Bevétel</h4>
+                            <span id="fin-revenue" style="font-size:1.4em; font-weight:bold; color:#4ade80;">0 Ft</span>
+                        </div>
+                        <div class="kpi-card glass-panel"
+                            style="background: rgba(220, 53, 69, 0.15); padding:15px; border-radius:10px;">
+                            <h4 style="margin:0 0 5px 0; font-size:0.9em; opacity:0.8;">Kiadás (Anyag)</h4>
+                            <span id="fin-expense" style="font-size:1.4em; font-weight:bold; color:#f87171;">0 Ft</span>
+                        </div>
+                        <div class="kpi-card glass-panel"
+                            style="background: rgba(255, 193, 7, 0.15); padding:15px; border-radius:10px;">
+                            <h4 style="margin:0 0 5px 0; font-size:0.9em; opacity:0.8;">Haszon (Profit)</h4>
+                            <span id="fin-profit" style="font-size:1.4em; font-weight:bold; color:#facc15;">0 Ft</span>
+                        </div>
+                        <div class="kpi-card glass-panel"
+                            style="background: rgba(59, 130, 246, 0.15); padding:15px; border-radius:10px;">
+                            <h4 style="margin:0 0 5px 0; font-size:0.9em; opacity:0.8;">Margin %</h4>
+                            <span id="fin-margin" style="font-size:1.4em; font-weight:bold; color:#60a5fa;">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Chart Placeholder -->
+                    <div class="chart-container"
+                        style="height: 200px; background: rgba(0,0,0,0.2); border-radius:12px; margin-bottom:20px; display:flex; align-items:flex-end; padding:10px 20px; gap:10px; overflow-x:auto;">
+                        <!-- Bars injected by JS -->
+                        <div style="margin:auto; opacity:0.5;">Diagram betöltése...</div>
+                    </div>
+
+                    <!-- Detailed Table -->
+                    <h3 style="margin-bottom:10px;">Tranzakciók listája</h3>
+                    <div class="table-container" style="max-height: 250px; overflow-y:auto;">
+                        <table class="admin-table" id="finance-table">
+                            <thead>
+                                <tr>
+                                    <th>Dátum</th>
+                                    <th>Ügyfél / Autó</th>
+                                    <th>Szolgáltatás</th>
+                                    <th style="text-align:right;">Bevétel</th>
+                                    <th style="text-align:right;">Kiadás</th>
+                                    <th style="text-align:right;">Haszon</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Service Breakdown (NEW) -->
+                <div class="glass-panel" style="padding:15px;">
+                    <h3 style="margin-top:0;">Szolgáltatás Megoszlás</h3>
+                    <div id="service-breakdown" style="display:flex; flex-direction:column; gap:10px;">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Gifts Modal (NEW) -->
+    <div id="gifts-modal" class="modal">
+        <div class="modal-content glass-panel admin-modal-large">
+            <div class="modal-header">
+                <h2>Beérkező Ajándék Meglepetések 🎁</h2>
+                <button class="close-btn" onclick="closeModal('gifts-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">Itt látod a kliensek által beküldött ajándék foglalásokat. Vedd fel velük a
+                    kapcsolatot, egyeztesd a pontos rendszámot, majd "Aktiváld" a munkát a naptárba.</p>
+                <div class="table-container">
+                    <table class="admin-table" id="gifts-table">
+                        <thead>
+                            <tr>
+                                <th>Küldő</th>
+                                <th>Célpont (Név)</th>
+                                <th>Dátum / Idő</th>
+                                <th>Autó / Cím Leírás</th>
+                                <th>Művelet</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Gifts injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gift Process Modal (Small Sub-modal) -->
+    <div id="gift-process-modal" class="modal" style="background: rgba(0,0,0,0.8);">
+        <div class="modal-content glass-panel" style="max-width: 400px; border: 2px solid #ff0055;">
+            <div class="modal-header">
+                <h3>Ajándék Aktiválása</h3>
+                <button class="close-btn" onclick="closeModal('gift-process-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="gift-process-info" style="font-size: 0.85rem; margin-bottom: 15px;"></p>
+                <form id="gift-process-form">
+                    <input type="hidden" id="process-gift-id">
+                    <div class="form-group">
+                        <label>Valódi Rendszám *</label>
+                        <input type="text" id="process-plate" placeholder="Pl. ABC-123" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Márka / Típus *</label>
+                        <input type="text" id="process-brand-model" placeholder="Pl. Ezüst BMW 3" required>
+                    </div>
+                    <button type="submit" class="btn-success full-width" style="margin-top: 15px;">Aktiválás a Naptárba
+                        🚀</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2>Beállítások</h2>
+                <button class="close-btn" onclick="closeModal('settings-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="settings-form">
+                    <!-- AI Smart Guard Settings -->
+                    <div
+                        style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="margin-top:0; margin-bottom:15px; font-size:1rem; color:#4cc9f0;">Nap és idő alapú
+                            időmenedzser 🧠
+                        </h3>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="lead-time" style="display:block; margin-bottom:10px; font-weight:bold;">
+                                Reagálási / Kiszállási Idő (perc)
+                            </label>
+                            <p style="font-size:0.85rem; opacity:0.7; margin-bottom:10px;">
+                                Minimum idő a "MOST" és az első foglalható időpont között. (Hogy odaérj.)
+                            </p>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="range" id="lead-slider" min="0" max="120" step="15" value="60"
+                                    style="flex:1;">
+                                <span id="lead-display"
+                                    style="font-weight:bold; font-size:1.2rem; min-width: 60px; text-align:right;">60
+                                    p</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 5px;">
+                            <label for="puffer-time" style="display:block; margin-bottom:10px; font-weight:bold;">
+                                Puffer Idő (perc)
+                            </label>
+                            <p style="font-size:0.85rem; opacity:0.7; margin-bottom:10px;">
+                                Utazási és adminisztrációs idő két munka között.
+                            </p>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="range" id="puffer-slider" min="0" max="60" step="5" value="15"
+                                    style="flex:1;">
+                                <span id="puffer-display"
+                                    style="font-weight:bold; font-size:1.2rem; min-width: 60px; text-align:right;">15
+                                    p</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom:10px; font-weight:bold;">
+                            Szolgáltatás Ideje (Fix)
+                        </label>
+                        <input type="text" value="30 perc" disabled style="opacity: 0.5; cursor: not-allowed;">
+                    </div>
+
+                    <!-- Opening Hours Settings (NEW) -->
+                    <div
+                        style="background: rgba(76, 201, 240, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(76, 201, 240, 0.3);">
+                        <h3 style="margin-top:0; margin-bottom:15px; font-size:1rem; color:#4cc9f0;">Nyitvatartás
+                            Beállítása 🕒</h3>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                            <div>
+                                <label style="display:block; font-size:0.85rem; margin-bottom:5px;">Nyitás (Óra)</label>
+                                <select id="opening-start" class="admin-select"
+                                    style="width:100%; padding:8px; border-radius:6px;">
+                                    <!-- Populated 0-23 -->
+                                    <option value="6">06:00</option>
+                                    <option value="7">07:00</option>
+                                    <option value="8" selected>08:00</option>
+                                    <option value="9">09:00</option>
+                                    <option value="10">10:00</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block; font-size:0.85rem; margin-bottom:5px;">Zárás (Óra)</label>
+                                <select id="opening-end" class="admin-select"
+                                    style="width:100%; padding:8px; border-radius:6px;">
+                                    <option value="16">16:00</option>
+                                    <option value="17" selected>17:00</option>
+                                    <option value="18">18:00</option>
+                                    <option value="19">19:00</option>
+                                    <option value="20">20:00</option>
+                                    <option value="21">21:00</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <label
+                            style="display:block; font-size:0.85rem; margin-bottom:10px; font-weight:bold;">Nyitvatartási
+                            Napok</label>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap:5px;">
+                            <label class="day-checkbox"><input type="checkbox" name="open-day" value="1" checked>
+                                Hét</label>
+                            <label class="day-checkbox"><input type="checkbox" name="open-day" value="2" checked>
+                                Kedd</label>
+                            <label class="day-checkbox"><input type="checkbox" name="open-day" value="3" checked>
+                                Szer</label>
+                            <label class="day-checkbox"><input type="checkbox" name="open-day" value="4" checked>
+                                Csüt</label>
+                            <label class="day-checkbox"><input type="checkbox" name="open-day" value="5" checked>
+                                Pén</label>
+                            <label class="day-checkbox"><input type="checkbox" name="open-day" value="6" checked>
+                                Szom</label>
+                            <label class="day-checkbox"><input type="checkbox" name="open-day" value="0"> Vas</label>
+                        </div>
+                    </div>
+
+                    <!-- Data Management Zone -->
+                    <div
+                        style="background: rgba(220, 53, 69, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(220, 53, 69, 0.3);">
+                        <h3 style="margin-top:0; margin-bottom:15px; font-size:1rem; color:#ff6b6b;">Adatbázis Kezelés
+                            (Veszélyzóna) ☢️</h3>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <button type="button" onclick="clearAllCars()" class="btn-danger"
+                                style="font-size:0.8rem; padding:10px;">
+                                Autók Törlése 🚗
+                            </button>
+                            <button type="button" onclick="clearAllVIPs()" class="btn-danger"
+                                style="font-size:0.8rem; padding:10px;">
+                                VIP Kérések Törlése 👑
+                            </button>
+                            <button type="button" onclick="clearAllUsers()" class="btn-danger"
+                                style="font-size:0.8rem; padding:10px; grid-column: span 2;">
+                                Összes Felhasználó Törlése 👥
+                            </button>
+                            <button type="button" onclick="deleteAllBookings()" class="btn-danger"
+                                style="font-size:0.8rem; padding:10px; grid-column: span 2; background: rgba(16, 124, 16, 0.2); border-color: #107c10; color: #4ade80;">
+                                Foglalások Törlése (Tiszta Lap) 📅
+                            </button>
+                        </div>
+                        <p style="font-size:0.75rem; opacity:0.6; margin-top:10px; text-align:center;">Ezek a műveletek
+                            nem visszavonhatók!</p>
+                    </div>
+
+                    <button type="submit" class="btn-primary full-width">Mentés</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Modal (NEW) -->
+    <div id="faq-modal" class="modal">
+        <div class="modal-content glass-panel admin-modal-large" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Rendszer GY.I.K. 📚</h2>
+                <button class="close-btn" onclick="closeModal('faq-modal')">×</button>
+            </div>
+            <div class="modal-body" style="line-height: 1.6; font-size: 0.9rem;">
+                <div
+                    style="background: rgba(76, 201, 240, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #4cc9f0;">
+                    <p>Üdvözlünk a vezérlőpult súgójában! Itt láthatod, mi mindent tudsz kezelni adminisztrátorként.
+                        🛠️🚀</p>
+                </div>
+
+                <div class="faq-section" style="margin-bottom: 25px;">
+                    <h3 style="color: #4cc9f0; border-bottom: 1px solid rgba(76, 201, 240, 0.3); padding-bottom: 10px;">
+                        🛠️ Rendszerfunkciók</h3>
+                    <div style="margin-top: 15px; display: grid; gap: 12px;">
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #4cc9f0;">
+                            <strong>📊 Vezérlőpult</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Összesített statisztikák,
+                                foglalások állapota és gyors elérés mindenhez.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #4361ee;">
+                            <strong>📅 Naptár (Timeline)</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Időrendi nézet a mosásokhoz.
+                                Itt láthatod a múltbéli, mai és jövőbeli feladatokat.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #ff0055;">
+                            <strong>👥 Ügyfelek</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Felhasználók kezelése:
+                                pontok írása, VIP tagság aktiválása és adatok módosítása.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
+                            <strong>🚗 Garázs</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Az összes rendszerben lévő
+                                autó listája. Szerkesztheted a rendszámokat és típusokat.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #4ade80;">
+                            <strong>🛠️ Szolgáltatások</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Itt állíthatod be a kínált
+                                csomagokat, azok árát és időtartamát.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #f72585;">
+                            <strong>💰 Pénzügyek</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Részletes pénzügyi elemzés:
+                                bevételek, anyagköltségek és tiszta profit követése.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #7209b7;">
+                            <strong>⚙️ Beállítások</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Nyitvatartás, puffer idők,
+                                lead time és teljes adatbázis törlési opciók.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #ff9f1c;">
+                            <strong>📢 Hirdetmények</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.8;">Üzenetek küldése minden
+                                felhasználónak, amik azonnal megjelennek náluk.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px; opacity: 0.5; font-size: 0.8rem;">
+                    Admin Panel v4.0 - 22. századi vezérlés 🚀
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="core.js"></script>
+    <script src="admin.js"></script>
+
+
+    <!-- Announcement Modal (Simpler V2) -->
+    <div id="announcement-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Globális Hirdetmény</h2>
+                <button class="close-btn" onclick="closeModal('announcement-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">Készíts előre üzeneteket, és aktiváld azt, amelyiket éppen meg szeretnél
+                    jeleníteni.</p>
+
+                <!-- 1. Create New -->
+                <div
+                    style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="margin-top:0;">Új Hirdetmény</h3>
+                    <form id="announcement-form" style="display: flex; gap: 10px; align-items: flex-start;">
+                        <input type="text" id="announcement-text" placeholder="Üzenet szövege (pl. Ma zárva tartunk)"
+                            class="admin-input" style="flex: 1; margin-bottom:0;" required>
+                        <button type="submit" class="btn-primary" style="white-space: nowrap;">Hozzáadás</button>
+                    </form>
+                </div>
+
+                <!-- 2. List -->
+                <h3>Mentett Üzenetek</h3>
+                <div class="table-wrapper" style="max-height: 300px; overflow-y: auto;">
+                    <table id="announcement-table">
+                        <thead>
+                            <tr>
+                                <th>Dátum</th>
+                                <th>Szöveg</th>
+                                <th style="text-align: center;">Státusz</th>
+                                <th style="text-align: right;">Művelet</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- VIP Requests Modal -->
+    <div id="vip-requests-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>VIP Igénylések 👑</h2>
+                <button class="close-btn" onclick="closeModal('vip-requests-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div
+                    style="background:rgba(255,215,0,0.1); padding:15px; border-radius:12px; margin-bottom:20px; border-left:4px solid #ffd700;">
+                    <p style="margin:0; font-size:0.9rem;">Itt bírálhatod el a <strong>Weekly Shine</strong>
+                        előfizetésre jelentkezőket.</p>
+                </div>
+                <div class="admin-table-container">
+                    <table class="admin-table" id="vip-requests-table">
+                        <thead>
+                            <tr>
+                                <th>Ügyfél</th>
+                                <th>Dátum</th>
+                                <th style="text-align:right;">Művelet</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- VIP Requests injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Edit Modal (VIP Management) -->
+    <div id="user-edit-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Felhasználó Szerkesztése ✏️</h2>
+                <button class="close-btn" onclick="closeModal('user-edit-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="user-edit-form" onsubmit="event.preventDefault(); saveUserEdit();">
+                    <input type="hidden" id="edit-user-id">
+
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:15px; margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label
+                                style="display:block; margin-bottom:5px; font-weight:bold; color:#4cc9f0;">Felhasználó
+                                Neve</label>
+                            <input type="text" id="edit-user-name" class="glass-input">
+                        </div>
+                        <div class="form-group">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold; color:#ffd700;">Shine
+                                Pontok</label>
+                            <input type="number" id="edit-user-points" class="glass-input" min="0">
+                        </div>
+                    </div>
+
+                    <div
+                        style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:20px; border:1px solid rgba(255,215,0,0.3);">
+                        <h4 style="margin-top:0; color:#ffd700; margin-bottom:15px;">👑 VIP Státusz és Előfizetés</h4>
+
+                        <div class="form-group"
+                            style="margin-bottom: 15px; display:flex; align-items:center; justify-content:space-between;">
+                            <label for="edit-vip-status" style="font-weight:bold;">Weekly Shine Előfizetés</label>
+                            <label class="switch">
+                                <input type="checkbox" id="edit-vip-status">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group" id="edit-sub-date-group"
+                            style="opacity:0.5; pointer-events:none; transition: all 0.3s;">
+                            <label for="edit-sub-start-date"
+                                style="display:block; margin-bottom:5px; font-size:0.9rem;">Előfizetés Kezdete
+                                (Dátum)</label>
+                            <input type="date" id="edit-sub-start-date" class="glass-input">
+                            <p style="font-size:0.75rem; opacity:0.6; margin-top:5px;">Ettől a naptól számítjuk a heti
+                                fordulókat.</p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary full-width">Módosítások Mentése 💾</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Car Edit Modal (NEW) -->
+    <div id="car-edit-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2>Autó Szerkesztése ✏️</h2>
+                <button class="close-btn" onclick="closeModal('car-edit-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="car-edit-form" onsubmit="event.preventDefault(); saveCarEdit();">
+                    <input type="hidden" id="edit-car-id">
+
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label
+                            style="display:block; margin-bottom:5px; font-weight:bold; color:#4cc9f0;">Rendszám</label>
+                        <input type="text" id="edit-car-plate" class="glass-input" placeholder="Pl. ABC-123">
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold; color:#fff;">Márka</label>
+                            <input type="text" id="edit-car-brand" class="glass-input" placeholder="Pl. BMW" required>
+                        </div>
+                        <div class="form-group">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold; color:#fff;">Típus</label>
+                            <input type="text" id="edit-car-model" class="glass-input" placeholder="Pl. X5" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary full-width">Autó Mentése 💾</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
